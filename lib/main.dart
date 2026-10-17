@@ -77,27 +77,35 @@ class _HabitListScreenState extends State<HabitListScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: habits.length,
-              itemBuilder: (context, index) {
-                final habit = habits[index];
-                return ListTile(
-                  title: Text(habit),
-                  onTap: () {
-                    setState(() {
-                      if (done.contains(habit)) {
-                        done.remove(habit);
-                      } else {
-                        done.add(habit);
-                      }
-                    });
-                  },
-                  trailing: done.contains(habit)
-                      ? const Icon(Icons.check)
-                      : null,
-                );
-              },
-            ),
+            child: habits.isEmpty
+                ? const Center(child: Text('No habits yet'))
+                : ListView.builder(
+                    itemCount: habits.length,
+                    itemBuilder: (context, index) {
+                      final habit = habits[index];
+                      return ListTile(
+                        title: Text(habit),
+                        onTap: () {
+                          setState(() {
+                            if (done.contains(habit)) {
+                              done.remove(habit);
+                            } else {
+                              done.add(habit);
+                            }
+                          });
+                        },
+                        onLongPress: () {
+                          setState(() {
+                            habits.remove(habit);
+                            done.remove(habit);
+                          });
+                        },
+                        trailing: done.contains(habit)
+                            ? const Icon(Icons.check)
+                            : null,
+                      );
+                    },
+                  ),
           ),
         ],
       ),
