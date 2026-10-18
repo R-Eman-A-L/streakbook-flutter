@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streak_book/models/habit.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,8 +27,13 @@ class HabitListScreen extends StatefulWidget {
 }
 
 class _HabitListScreenState extends State<HabitListScreen> {
-  final Set<String> done = {};
-  final List<String> habits = ['Read', 'Gym', 'Water', 'Walk'];
+  final List<Habit> habits = [
+    const Habit(id: 1, name: 'Read'),
+    const Habit(id: 2, name: 'Gym'),
+    const Habit(id: 3, name: 'Water'),
+    const Habit(id: 4, name: 'Walk'),
+  ];
+  int _nextId = 5;
   final _controller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -54,7 +60,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
                     validator: (value) {
                       final name = value?.trim() ?? '';
                       if (name.isEmpty) return "Enter a habit name";
-                      if (habits.contains(name)) {
+                      if (habits.any((h) => h.name == name)) {
                         return 'You already have that habit';
                       }
                       return null;
@@ -65,8 +71,9 @@ class _HabitListScreenState extends State<HabitListScreen> {
                   tooltip: 'Add habit',
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      final name = _controller.text.trim();
                       setState(() {
-                        habits.add(_controller.text.trim());
+                        habits.add(Habit(id: _nextId++, name: name));
                         _controller.clear();
                       });
                     }
@@ -84,23 +91,21 @@ class _HabitListScreenState extends State<HabitListScreen> {
                     itemBuilder: (context, index) {
                       final habit = habits[index];
                       return ListTile(
-                        title: Text(habit),
+                        title: Text(habit.name),
                         onTap: () {
+                          final i = habits.indexWhere((h) => h.id == habit.id);
                           setState(() {
-                            if (done.contains(habit)) {
-                              done.remove(habit);
-                            } else {
-                              done.add(habit);
-                            }
+                            habits[i] = habit.copyWith(
+                              doneToday: !habit.doneToday,
+                            );
                           });
                         },
                         onLongPress: () {
                           setState(() {
-                            habits.remove(habit);
-                            done.remove(habit);
+                            habits.removeWhere((h) => h.id == habit.id);
                           });
                         },
-                        trailing: done.contains(habit)
+                        trailing: habit.doneToday
                             ? const Icon(Icons.check)
                             : null,
                       );
