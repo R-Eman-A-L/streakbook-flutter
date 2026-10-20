@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streak_book/data/in_memory_habit_repository.dart';
 import 'package:streak_book/models/habit.dart';
 import 'package:streak_book/view_models/habit_list_view_model.dart';
 
@@ -28,7 +29,7 @@ class HabitListScreen extends StatefulWidget {
 }
 
 class _HabitListScreenState extends State<HabitListScreen> {
-  final _viewModel = HabitListViewModel();
+  final _viewModel = HabitListViewModel(InMemoryHabitRepository());
   final _controller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
