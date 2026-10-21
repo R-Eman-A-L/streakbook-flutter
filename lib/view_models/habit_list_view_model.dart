@@ -1,30 +1,57 @@
 import 'package:flutter/foundation.dart';
 import 'package:streak_book/data/habit_repository.dart';
-import 'package:streak_book/models/habit.dart';
+import 'package:streak_book/models/habit_list_ui_state.dart';
 
 class HabitListViewModel extends ChangeNotifier {
-  HabitListViewModel(this._repository);
+  HabitListViewModel(this._repository) {
+    _refresh();
+  }
+
   final HabitRepository _repository;
 
-  List<Habit> get habits => _repository.getHabits();
+  HabitListUiState _state = const HabitListUiState();
+  HabitListUiState get state => _state;
 
-  void toggle(int id) {
+  void _refresh([String? error]) {
+    final habits = _repository.getHabits();
+    final doneCount = habits.where((h) => h.doneToday).length;
+    _state = HabitListUiState(
+      habits: habits,
+      doneCount: doneCount,
+      error: error,
+    );
+    notifyListeners();
+  }
+
+  void onToggle(int id) {
     _repository.toggle(id);
-    notifyListeners();
+    _refresh();
   }
 
-  void deleteHabit(int id) {
+  void onDelete(int id) {
     _repository.delete(id);
-    notifyListeners();
+    _refresh();
   }
 
-  void addHabit(String name) {
-    if (validate(name) != null) return;
+  bool onAdd(String name) {
+    final problem = _validate(name);
+    if (problem != null) {
+      _refresh(problem);
+      return false;
+    }
+
     _repository.add(name);
-    notifyListeners();
+    _refresh();
+    return true;
   }
 
-  String? validate(String value) {
+  void onTextChanged() {
+    if (_state.error == null) return;
+
+    _refresh();
+  }
+
+  String? _validate(String value) {
     final habits = _repository.getHabits();
     final name = value.trim();
 

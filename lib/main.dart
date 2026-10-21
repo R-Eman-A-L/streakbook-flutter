@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:streak_book/data/in_memory_habit_repository.dart';
-import 'package:streak_book/models/habit.dart';
 import 'package:streak_book/view_models/habit_list_view_model.dart';
 
 void main() {
@@ -31,7 +30,6 @@ class HabitListScreen extends StatefulWidget {
 class _HabitListScreenState extends State<HabitListScreen> {
   final _viewModel = HabitListViewModel(InMemoryHabitRepository());
   final _controller = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -47,35 +45,34 @@ class _HabitListScreenState extends State<HabitListScreen> {
       body: ListenableBuilder(
         listenable: _viewModel,
         builder: (context, _) {
-          final habits = _viewModel.habits;
+          final state = _viewModel.state;
+          final habits = state.habits;
           return Column(
             children: [
-              Form(
-                key: _formKey,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _controller,
-                        decoration: const InputDecoration(
-                          labelText: 'New habit',
-                        ),
-                        validator: (value) => _viewModel.validate(value ?? ''),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        labelText: 'New habit',
+                        errorText: state.error,
                       ),
+                      onChanged: (_) => _viewModel.onTextChanged(),
                     ),
-                    IconButton(
-                      tooltip: 'Add habit',
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _viewModel.addHabit(_controller.text);
-                          _controller.clear();
-                        }
-                      },
-                      icon: const Icon(Icons.add),
-                    ),
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    tooltip: 'Add habit',
+                    onPressed: () {
+                      if (_viewModel.onAdd(_controller.text)) {
+                        _controller.clear();
+                      }
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
               ),
+              Text('${state.doneCount} of ${habits.length} done today'),
               Expanded(
                 child: habits.isEmpty
                     ? const Center(child: Text('No habits yet'))
@@ -85,10 +82,9 @@ class _HabitListScreenState extends State<HabitListScreen> {
                           final habit = habits[index];
                           return ListTile(
                             title: Text(habit.name),
-                            onTap: () {
-                              _viewModel.toggle(habit.id);
-                            },
-                            onLongPress: () => _viewModel.deleteHabit(habit.id),
+                            onTap: () => _viewModel.onToggle(habit.id),
+
+                            onLongPress: () => _viewModel.onDelete(habit.id),
                             trailing: habit.doneToday
                                 ? const Icon(Icons.check)
                                 : null,
