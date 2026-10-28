@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:streak_book/data/habit_repository.dart';
-import 'package:streak_book/models/habit_list_ui_state.dart';
+import 'package:streak_book/ui/habit_list/habit_list_ui_state.dart';
 
 class HabitListViewModel extends ChangeNotifier {
   HabitListViewModel(this._repository) {
