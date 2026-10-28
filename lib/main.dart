@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:streak_book/data/in_memory_habit_repository.dart';
+import 'package:streak_book/ui/habit_detail/habit_detail_screen.dart';
 import 'package:streak_book/ui/habit_list/habit_list_screen.dart';
 import 'package:streak_book/ui/habit_list/habit_list_view_model.dart';
 
@@ -16,8 +17,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'StreakBook',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const HabitListScreen(),
+      home: Builder(
+        builder: (context) {
+          return  HabitListScreen(
+            onOpenHabit: (id) => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: id)),
+            ),
+          );
+        },
+      ),
     );
   }
 }
-

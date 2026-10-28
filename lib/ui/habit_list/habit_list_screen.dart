@@ -4,7 +4,8 @@ import 'package:streak_book/data/in_memory_habit_repository.dart';
 import 'package:streak_book/ui/habit_list/habit_list_view_model.dart';
 
 class HabitListScreen extends StatefulWidget {
-  const HabitListScreen({super.key});
+  final void Function(int id) onOpenHabit;
+  const HabitListScreen({super.key, required this.onOpenHabit});
 
   @override
   State<HabitListScreen> createState() => _HabitListScreenState();
@@ -65,12 +66,10 @@ class _HabitListScreenState extends State<HabitListScreen> {
                           final habit = habits[index];
                           return ListTile(
                             title: Text(habit.name),
-                            onTap: () => _viewModel.onToggle(habit.id),
+                            onTap: () => widget.onOpenHabit(habit.id),
 
                             onLongPress: () => _viewModel.onDelete(habit.id),
-                            trailing: habit.doneToday
-                                ? const Icon(Icons.check)
-                                : null,
+                            trailing:Checkbox(value: habit.doneToday, onChanged:(_) => _viewModel.onToggle(habit.id), ),
                           );
                         },
                       ),
