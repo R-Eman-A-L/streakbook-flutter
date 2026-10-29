@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:streak_book/data/in_memory_habit_repository.dart';
+import 'package:streak_book/data/habit_repository.dart';
 import 'package:streak_book/ui/habit_list/habit_list_view_model.dart';
 
 class HabitListScreen extends StatefulWidget {
+  final HabitRepository repository;
   final void Function(int id) onOpenHabit;
-  const HabitListScreen({super.key, required this.onOpenHabit});
+  const HabitListScreen({
+    super.key,
+    required this.repository,
+    required this.onOpenHabit,
+  });
 
   @override
   State<HabitListScreen> createState() => _HabitListScreenState();
 }
 
 class _HabitListScreenState extends State<HabitListScreen> {
-  final _viewModel = HabitListViewModel(InMemoryHabitRepository());
+  late final HabitListViewModel _viewModel;
   final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _viewModel = HabitListViewModel(widget.repository);
+  }
 
   @override
   void dispose() {
@@ -68,7 +80,10 @@ class _HabitListScreenState extends State<HabitListScreen> {
                             onTap: () => widget.onOpenHabit(habit.id),
 
                             onLongPress: () => _viewModel.onDelete(habit.id),
-                            trailing:Checkbox(value: habit.doneToday, onChanged:(_) => _viewModel.onToggle(habit.id), ),
+                            trailing: Checkbox(
+                              value: habit.doneToday,
+                              onChanged: (_) => _viewModel.onToggle(habit.id),
+                            ),
                           );
                         },
                       ),

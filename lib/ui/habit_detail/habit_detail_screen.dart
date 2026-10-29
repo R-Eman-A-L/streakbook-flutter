@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:streak_book/data/in_memory_habit_repository.dart';
+import 'package:streak_book/data/habit_repository.dart';
 import 'package:streak_book/ui/habit_detail/habit_detail_view_model.dart';
 
 class HabitDetailScreen extends StatefulWidget {
   final int habitId;
-  const HabitDetailScreen({super.key, required this.habitId});
+  final HabitRepository repository;
+  const HabitDetailScreen({
+    super.key,
+    required this.habitId,
+    required this.repository,
+  });
 
   @override
   State<HabitDetailScreen> createState() => _HabitDetailScreenState();
@@ -16,10 +21,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = HabitDetailViewModel(
-      widget.habitId,
-      InMemoryHabitRepository(),
-    );
+    _viewModel = HabitDetailViewModel(widget.habitId, widget.repository);
   }
 
   @override
