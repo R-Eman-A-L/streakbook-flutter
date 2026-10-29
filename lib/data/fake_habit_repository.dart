@@ -1,11 +1,11 @@
 import 'package:streak_book/data/habit_repository.dart';
 import 'package:streak_book/models/habit.dart';
+import 'package:collection/collection.dart';
 
 class FakeHabitRepository implements HabitRepository {
   final List<Habit> _habits = [
     const Habit(id: 1, name: 'Test A'),
     const Habit(id: 2, name: 'Test B'),
-
   ];
 
   int _nextId = 3;
@@ -29,5 +29,10 @@ class FakeHabitRepository implements HabitRepository {
     if (i == -1) return;
     final current = _habits[i];
     _habits[i] = current.copyWith(doneToday: !current.doneToday);
+  }
+
+  @override
+  Habit? getHabit(int id) {
+    return _habits.firstWhereOrNull((h) => h.id == id);
   }
 }

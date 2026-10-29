@@ -1,14 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:streak_book/data/in_memory_habit_repository.dart';
+import 'package:streak_book/ui/habit_detail/habit_detail_view_model.dart';
 
-class HabitDetailScreen extends StatelessWidget {
+class HabitDetailScreen extends StatefulWidget {
   final int habitId;
   const HabitDetailScreen({super.key, required this.habitId});
 
   @override
+  State<HabitDetailScreen> createState() => _HabitDetailScreenState();
+}
+
+class _HabitDetailScreenState extends State<HabitDetailScreen> {
+  late final HabitDetailViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = HabitDetailViewModel(
+      widget.habitId,
+      InMemoryHabitRepository(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Habit"),),
-      body: Center(child: Text('Habit #$habitId'),),
+      appBar: AppBar(title: Text("Habit")),
+      body: ListenableBuilder(
+        listenable: _viewModel,
+        builder: (context, _) {
+          final state = _viewModel.state;
+          return (state.isNotFound)
+              ? Center(child: Text("Habit not found"))
+              : Center(
+                  child: Column(
+                    mainAxisSize: .min,
+                    children: [
+                      Text('${state.habitName}'),
+                      Text(
+                        'The status of the habit is: ${(state.doneToday) ? "Done today ✓" : "Not done yet"}',
+                      ),
+                    ],
+                  ),
+                );
+        },
+      ),
     );
   }
 }

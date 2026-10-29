@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:streak_book/data/in_memory_habit_repository.dart';
 import 'package:streak_book/ui/habit_list/habit_list_view_model.dart';
 

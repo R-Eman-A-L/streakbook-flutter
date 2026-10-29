@@ -1,5 +1,6 @@
 import 'package:streak_book/data/habit_repository.dart';
 import 'package:streak_book/models/habit.dart';
+import 'package:collection/collection.dart';
 
 class InMemoryHabitRepository implements HabitRepository {
   final List<Habit> _habits = [
@@ -30,5 +31,10 @@ class InMemoryHabitRepository implements HabitRepository {
     if (i == -1) return;
     final current = _habits[i];
     _habits[i] = current.copyWith(doneToday: !current.doneToday);
+  }
+
+  @override
+  Habit? getHabit(int id) {
+    return _habits.firstWhereOrNull((h) => h.id == id);
   }
 }

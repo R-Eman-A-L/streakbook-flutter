@@ -5,4 +5,5 @@ abstract class HabitRepository {
   void add(String name);
   void toggle(int id);
   void delete(int id);
+  Habit? getHabit(int id);
 }
