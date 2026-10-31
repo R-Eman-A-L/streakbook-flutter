@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 class InMemoryHabitRepository implements HabitRepository {
   final List<Habit> _habits = [
     const Habit(id: 1, name: 'Read'),
-    const Habit(id: 2, name: 'Gym'),
+    Habit(id: 2, name: 'Gym', completedDates: {DateTime(2026, 10, 30)}),
     const Habit(id: 3, name: 'Water'),
     const Habit(id: 4, name: 'Walk'),
   ];
@@ -26,11 +26,18 @@ class InMemoryHabitRepository implements HabitRepository {
   List<Habit> getHabits() => List.unmodifiable(_habits);
 
   @override
-  void toggle(int id) {
+  void toggle(int id, DateTime date) {
     final i = _habits.indexWhere((h) => h.id == id);
     if (i == -1) return;
     final current = _habits[i];
-    _habits[i] = current.copyWith(doneToday: !current.doneToday);
+    final completedDates = Set.of(current.completedDates);
+
+    if (completedDates.contains(date)) {
+      completedDates.remove(date);
+    } else {
+      completedDates.add(date);
+    }
+    _habits[i] = current.copyWith(completedDates: completedDates);
   }
 
   @override

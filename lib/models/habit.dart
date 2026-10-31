@@ -1,13 +1,17 @@
 class Habit {
   final int id;
   final String name;
-  final bool doneToday;
+  final Set<DateTime> completedDates;
 
-  const Habit({required this.id, required this.name, this.doneToday = false});
+  const Habit({
+    required this.id,
+    required this.name,
+    this.completedDates = const {},
+  });
 
-  Habit copyWith({String? name, bool? doneToday}) => Habit(
+  Habit copyWith({String? name, Set<DateTime>? completedDates}) => Habit(
     id: id,
     name: name ?? this.name,
-    doneToday: doneToday ?? this.doneToday,
+    completedDates: completedDates ?? this.completedDates,
   );
 }

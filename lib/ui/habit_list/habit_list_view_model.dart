@@ -1,30 +1,39 @@
 import 'package:flutter/foundation.dart';
+import 'package:streak_book/data/clock.dart';
 import 'package:streak_book/data/habit_repository.dart';
 import 'package:streak_book/ui/habit_list/habit_list_ui_state.dart';
 
 class HabitListViewModel extends ChangeNotifier {
-  HabitListViewModel(this._repository) {
+  HabitListViewModel(this._repository, this._clock) {
     _refresh();
   }
 
   final HabitRepository _repository;
+  final Clock _clock;
 
   HabitListUiState _state = const HabitListUiState();
   HabitListUiState get state => _state;
 
   void _refresh([String? error]) {
     final habits = _repository.getHabits();
-    final doneCount = habits.where((h) => h.doneToday).length;
+    final date = _clock.today();
+    final doneTodayIds = habits
+        .where((h) => h.completedDates.contains(date))
+        .map((h) => h.id)
+        .toSet();
+    final doneCount = doneTodayIds.length;
     _state = HabitListUiState(
       habits: habits,
       doneCount: doneCount,
+      doneTodayIds: doneTodayIds,
       error: error,
     );
     notifyListeners();
   }
 
   void onToggle(int id) {
-    _repository.toggle(id);
+    final date = _clock.today();
+    _repository.toggle(id, date);
     _refresh();
   }
 

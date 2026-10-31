@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:streak_book/data/clock.dart';
 import 'package:streak_book/data/habit_repository.dart';
 import 'package:streak_book/ui/habit_list/habit_list_view_model.dart';
 
 class HabitListScreen extends StatefulWidget {
   final HabitRepository repository;
+  final Clock clock;
   final void Function(int id) onOpenHabit;
+  
   const HabitListScreen({
     super.key,
     required this.repository,
+    required this.clock,
     required this.onOpenHabit,
   });
 
@@ -21,9 +25,8 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _viewModel = HabitListViewModel(widget.repository);
+    _viewModel = HabitListViewModel(widget.repository, widget.clock);
   }
 
   @override
@@ -81,7 +84,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
 
                             onLongPress: () => _viewModel.onDelete(habit.id),
                             trailing: Checkbox(
-                              value: habit.doneToday,
+                              value: state.doneTodayIds.contains(habit.id),
                               onChanged: (_) => _viewModel.onToggle(habit.id),
                             ),
                           );
