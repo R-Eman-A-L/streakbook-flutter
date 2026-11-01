@@ -46,15 +46,41 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
         listenable: _viewModel,
         builder: (context, _) {
           final state = _viewModel.state;
-          return (state.isNotFound)
+          return state.isNotFound
               ? Center(child: Text("Habit not found"))
               : Center(
                   child: Column(
                     mainAxisSize: .min,
                     children: [
-                      Text('${state.habitName}'),
+                      Text(state.habitName ?? ''),
                       Text(
-                        'The status of the habit is: ${(state.doneToday) ? "Done today ✓" : "Not done yet"}',
+                        'The status of the habit is: ${state.doneToday ? "Done today ✓" : "Not done yet"}',
+                      ),
+
+                      Row(
+                        mainAxisAlignment: .center,
+                        children: [
+                          for (final done in state.last7Days)
+                            Container(
+                              width: 24,
+                              height: 24,
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              decoration: BoxDecoration(
+                                shape: .circle,
+                                color: done
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainerHighest,
+                              ),
+                            ),
+                        ],
+                      ),
+
+                      Text(
+                        state.currentStreak > 0
+                            ? "🔥 ${state.currentStreak}-day streak"
+                            : "No streak yet",
                       ),
                     ],
                   ),
