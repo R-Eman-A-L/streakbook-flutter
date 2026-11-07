@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streak_book/data/clock.dart';
 import 'package:streak_book/data/habit_repository.dart';
-import 'package:streak_book/data/in_memory_habit_repository.dart';
+import 'package:streak_book/data/saved_habit_repository.dart';
 import 'package:streak_book/ui/habit_detail/habit_detail_screen.dart';
 import 'package:streak_book/ui/habit_list/habit_list_screen.dart';
 
-void main() {
-  final repository = InMemoryHabitRepository();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final notebook = SharedPreferencesAsync();
+  final habitsText = await notebook.getString('habits');
+  final savedNextId = await notebook.getInt('nextId');
+
+  final repository = SavedHabitRepository(notebook, habitsText, savedNextId);
   final clock = SystemClock();
-  runApp(MyApp(repository: repository, clock: clock,));
+  
+  runApp(MyApp(repository: repository, clock: clock));
 }
 
 class MyApp extends StatelessWidget {
