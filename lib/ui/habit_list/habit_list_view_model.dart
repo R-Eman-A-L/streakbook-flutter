@@ -1,15 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:streak_book/data/clock.dart';
 import 'package:streak_book/data/habit_repository.dart';
+import 'package:streak_book/data/quote_repository.dart';
+import 'package:streak_book/models/quote_state.dart';
 import 'package:streak_book/ui/habit_list/habit_list_ui_state.dart';
 
 class HabitListViewModel extends ChangeNotifier {
-  HabitListViewModel(this._repository, this._clock) {
+  HabitListViewModel(this._repository, this._clock, this._quoteRepository) {
     _refresh();
+    _loadQuote();
   }
 
   final HabitRepository _repository;
   final Clock _clock;
+  final QuoteRepository _quoteRepository;
 
   HabitListUiState _state = const HabitListUiState();
   HabitListUiState get state => _state;
@@ -22,13 +26,31 @@ class HabitListViewModel extends ChangeNotifier {
         .map((h) => h.id)
         .toSet();
     final doneCount = doneTodayIds.length;
-    _state = HabitListUiState(
+    _state =HabitListUiState(
       habits: habits,
       doneCount: doneCount,
       doneTodayIds: doneTodayIds,
       error: error,
+      quote: _state.quote,
     );
     notifyListeners();
+  }
+
+  Future<void> _loadQuote() async {
+    _state = _state.copyWith(quote: QuoteLoading());
+    notifyListeners();
+    try {
+      final quote = await _quoteRepository.getQuote();
+      _state = _state.copyWith(quote: QuoteSuccess(quote));
+    } catch (e) {
+      debugPrint('Quote failed: $e');
+      _state = _state.copyWith(quote: QuoteError("Couldn't load the quote"));
+    }
+    notifyListeners();
+  }
+
+  void onRetryQuote() {
+    _loadQuote();
   }
 
   void onToggle(int id) {

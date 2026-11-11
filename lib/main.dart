@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streak_book/data/clock.dart';
 import 'package:streak_book/data/habit_repository.dart';
+import 'package:streak_book/data/network_quote_repository.dart';
+import 'package:streak_book/data/quote_repository.dart';
 import 'package:streak_book/data/saved_habit_repository.dart';
 import 'package:streak_book/ui/habit_detail/habit_detail_screen.dart';
 import 'package:streak_book/ui/habit_list/habit_list_screen.dart';
@@ -14,14 +17,27 @@ void main() async {
 
   final repository = SavedHabitRepository(notebook, habitsText, savedNextId);
   final clock = SystemClock();
-  
-  runApp(MyApp(repository: repository, clock: clock));
+  final quoteRepository = NetworkQuoteRepository(http.Client());
+
+  runApp(
+    MyApp(
+      repository: repository,
+      clock: clock,
+      quoteRepository: quoteRepository,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   final HabitRepository repository;
   final Clock clock;
-  const MyApp({super.key, required this.repository, required this.clock});
+  final QuoteRepository quoteRepository;
+  const MyApp({
+    super.key,
+    required this.repository,
+    required this.clock,
+    required this.quoteRepository,
+  });
 
   // This widget is the root of your application.
   @override
@@ -43,6 +59,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
+            quoteRepository: quoteRepository,
           );
         },
       ),

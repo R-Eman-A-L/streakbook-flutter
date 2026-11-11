@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:streak_book/data/clock.dart';
 import 'package:streak_book/data/habit_repository.dart';
+import 'package:streak_book/data/quote_repository.dart';
+import 'package:streak_book/models/quote_state.dart';
 import 'package:streak_book/ui/habit_list/habit_list_view_model.dart';
+import 'package:streak_book/ui/habit_list/quote_card.dart';
 
 class HabitListScreen extends StatefulWidget {
   final HabitRepository repository;
   final Clock clock;
+  final QuoteRepository quoteRepository;
   final void Function(int id) onOpenHabit;
-  
+
   const HabitListScreen({
     super.key,
     required this.repository,
     required this.clock,
+    required this.quoteRepository,
     required this.onOpenHabit,
   });
 
@@ -26,7 +31,11 @@ class _HabitListScreenState extends State<HabitListScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = HabitListViewModel(widget.repository, widget.clock);
+    _viewModel = HabitListViewModel(
+      widget.repository,
+      widget.clock,
+      widget.quoteRepository,
+    );
   }
 
   @override
@@ -47,6 +56,7 @@ class _HabitListScreenState extends State<HabitListScreen> {
           final habits = state.habits;
           return Column(
             children: [
+              QuoteCard(quote: state.quote, onRetry: _viewModel.onRetryQuote),
               Row(
                 children: [
                   Expanded(
