@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:streak_book/data/clock.dart';
-import 'package:streak_book/data/habit_repository.dart';
-import 'package:streak_book/data/network_quote_repository.dart';
-import 'package:streak_book/data/quote_repository.dart';
+import 'package:streak_book/data/fake_quote_repository.dart';
 import 'package:streak_book/data/saved_habit_repository.dart';
+import 'package:streak_book/di/providers.dart';
 import 'package:streak_book/ui/habit_detail/habit_detail_screen.dart';
 import 'package:streak_book/ui/habit_list/habit_list_screen.dart';
 
@@ -16,29 +14,17 @@ void main() async {
   final savedNextId = await notebook.getInt('nextId');
 
   final repository = SavedHabitRepository(notebook, habitsText, savedNextId);
-  final clock = SystemClock();
-  final quoteRepository = NetworkQuoteRepository(http.Client());
 
   runApp(
-    MyApp(
-      repository: repository,
-      clock: clock,
-      quoteRepository: quoteRepository,
+    ProviderScope(
+      overrides: [habitRepositoryProvider.overrideWith((ref) => repository)],
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final HabitRepository repository;
-  final Clock clock;
-  final QuoteRepository quoteRepository;
-  const MyApp({
-    super.key,
-    required this.repository,
-    required this.clock,
-    required this.quoteRepository,
-  });
-
+  const MyApp({super.key});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -48,18 +34,9 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) {
           return HabitListScreen(
-            repository: repository,
-            clock: clock,
             onOpenHabit: (id) => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => HabitDetailScreen(
-                  habitId: id,
-                  repository: repository,
-                  clock: clock,
-                ),
-              ),
+              MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: id)),
             ),
-            quoteRepository: quoteRepository,
           );
         },
       ),

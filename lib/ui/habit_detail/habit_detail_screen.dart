@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:streak_book/data/clock.dart';
-import 'package:streak_book/data/habit_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:streak_book/di/providers.dart';
 import 'package:streak_book/ui/habit_detail/habit_detail_view_model.dart';
 
-class HabitDetailScreen extends StatefulWidget {
+class HabitDetailScreen extends ConsumerStatefulWidget {
   final int habitId;
-  final HabitRepository repository;
-  final Clock clock;
-
-  const HabitDetailScreen({
-    super.key,
-    required this.habitId,
-    required this.repository,
-    required this.clock,
-  });
+  const HabitDetailScreen({super.key, required this.habitId});
 
   @override
-  State<HabitDetailScreen> createState() => _HabitDetailScreenState();
+  ConsumerState<HabitDetailScreen> createState() => _HabitDetailScreenState();
 }
 
-class _HabitDetailScreenState extends State<HabitDetailScreen> {
+class _HabitDetailScreenState extends ConsumerState<HabitDetailScreen> {
   late final HabitDetailViewModel _viewModel;
 
   @override
@@ -27,8 +19,8 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
     super.initState();
     _viewModel = HabitDetailViewModel(
       widget.habitId,
-      widget.repository,
-      widget.clock,
+      ref.read(habitRepositoryProvider),
+      ref.read(clockProvider),
     );
   }
 

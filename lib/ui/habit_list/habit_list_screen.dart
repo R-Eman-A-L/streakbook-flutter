@@ -1,30 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:streak_book/data/clock.dart';
-import 'package:streak_book/data/habit_repository.dart';
-import 'package:streak_book/data/quote_repository.dart';
-import 'package:streak_book/models/quote_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:streak_book/di/providers.dart';
 import 'package:streak_book/ui/habit_list/habit_list_view_model.dart';
 import 'package:streak_book/ui/habit_list/quote_card.dart';
 
-class HabitListScreen extends StatefulWidget {
-  final HabitRepository repository;
-  final Clock clock;
-  final QuoteRepository quoteRepository;
+class HabitListScreen extends ConsumerStatefulWidget {
   final void Function(int id) onOpenHabit;
 
-  const HabitListScreen({
-    super.key,
-    required this.repository,
-    required this.clock,
-    required this.quoteRepository,
-    required this.onOpenHabit,
-  });
+  const HabitListScreen({super.key, required this.onOpenHabit});
 
   @override
-  State<HabitListScreen> createState() => _HabitListScreenState();
+  ConsumerState<HabitListScreen> createState() => _HabitListScreenState();
 }
 
-class _HabitListScreenState extends State<HabitListScreen> {
+class _HabitListScreenState extends ConsumerState<HabitListScreen> {
   late final HabitListViewModel _viewModel;
   final _controller = TextEditingController();
 
@@ -32,9 +21,9 @@ class _HabitListScreenState extends State<HabitListScreen> {
   void initState() {
     super.initState();
     _viewModel = HabitListViewModel(
-      widget.repository,
-      widget.clock,
-      widget.quoteRepository,
+      ref.read(habitRepositoryProvider),
+      ref.read(clockProvider),
+      ref.read(quoteRepositoryProvider),
     );
   }
 
