@@ -3,12 +3,16 @@ import 'package:streak_book/models/quote.dart';
 
 class FakeQuoteRepository implements QuoteRepository {
   final bool shouldFail;
+  final Duration delay;
 
-  const FakeQuoteRepository({this.shouldFail = false});
+  const FakeQuoteRepository({
+    this.shouldFail = false,
+    this.delay = Duration.zero,
+  });
 
   @override
   Future<Quote> getQuote() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(delay);
 
     if (shouldFail) throw Exception('Fake failure');
 

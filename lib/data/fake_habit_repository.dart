@@ -3,12 +3,25 @@ import 'package:streak_book/models/habit.dart';
 import 'package:collection/collection.dart';
 
 class FakeHabitRepository implements HabitRepository {
-  final List<Habit> _habits = [
-    const Habit(id: 1, name: 'Test A'),
-    const Habit(id: 2, name: 'Test B'),
-  ];
+  final List<Habit> _habits;
+  int _nextId = 1;
 
-  int _nextId = 3;
+  FakeHabitRepository({List<Habit>? habits})
+    : _habits = List.of(habits ?? _startingHabits()) {
+    // the constructor BODY runs after _habits is filled, so it can look at the list
+    int biggestId = 0;
+    for (final habit in _habits) {
+      if (habit.id > biggestId) biggestId = habit.id;
+    }
+    _nextId = biggestId + 1;
+  }
+
+  static List<Habit> _startingHabits() => [
+    const Habit(id: 1, name: 'Read'),
+    Habit(id: 2, name: 'Gym', completedDates: {DateTime(2026, 10, 30)}),
+    const Habit(id: 3, name: 'Water'),
+    const Habit(id: 4, name: 'Walk'),
+  ];
 
   @override
   void add(String name) {

@@ -27,7 +27,7 @@ class NetworkQuoteRepository implements QuoteRepository {
         .get(url)
         .timeout(const Duration(seconds: 10));
 
-    if (response.statusCode < 200 && response.statusCode >= 300) {
+    if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Bad status: ${response.statusCode}');
     }
 
